@@ -208,6 +208,10 @@ export default function useGovernanceAssets() {
           currentPluginPk.toBase58()
         ),
     },
+    [PackageEnum.Meteora]: {
+      name: 'Meteora',
+      image: '/img/meteora.svg',
+    },
   }
 
   // Alphabetical order, Packages then instructions
