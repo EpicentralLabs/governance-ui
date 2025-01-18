@@ -1,13 +1,31 @@
-/**
- * The following code fixes the errors by retrieving the mint info for each token
- * and passing it to getMintDecimalAmountFromNatural instead of a PublicKey.
- */
+import { Connection, PublicKey } from '@solana/web3.js';
+import { AccountMetaData } from '@solana/spl-governance';
+import { useQuery } from '@tanstack/react-query';
+import { getMintDecimalAmountFromNatural } from '@tools/sdk/units';
+import { TOKEN_PROGRAM_ID, AccountLayout, MintLayout } from '@solana/spl-token'; 
 
-// Start of Selection
-import { Connection } from '@solana/web3.js'
-import { AccountMetaData } from '@solana/spl-governance'
-import { tryGetTokenAccount, tryGetMint } from '@utils/tokens'
-import { getMintDecimalAmountFromNatural } from '@tools/sdk/units'
+// Helper function to fetch token account
+const fetchTokenAccount = async (connection: Connection, publicKey: PublicKey) => {
+  const accountInfo = await connection.getAccountInfo(publicKey);
+  if (!accountInfo || !accountInfo.owner.equals(TOKEN_PROGRAM_ID)) return null;
+
+  // Decode token account data using AccountLayout
+  const decodedData = AccountLayout.decode(accountInfo.data);
+  const mint = decodedData.mint; // Extract the mint address
+
+  return { ...decodedData, mint: new PublicKey(mint) };
+};
+
+// Helper function to fetch mint info
+const fetchMintInfo = async (connection: Connection, mint: PublicKey) => {
+  if (!mint) return null;
+  const mintInfo = await connection.getAccountInfo(mint);
+  if (!mintInfo) return null;
+
+  // Decode mint account data using MintLayout
+  const decodedMintInfo = MintLayout.decode(mintInfo.data); // Decode the mint account data
+  return decodedMintInfo; // Return the decoded mint info
+};
 
 export const METEORA_INSTRUCTIONS = {
   'M3mxk5W2tt27WGZWpZR7hUpV7c5Hqm8GfwUtbyLJGrj1': {
@@ -22,28 +40,36 @@ export const METEORA_INSTRUCTIONS = {
         { name: 'Pool State' },
         { name: 'Token Program' },
       ],
-      getDataUI: async (
+      getDataUI: (
         connection: Connection,
         data: Uint8Array,
         accounts: AccountMetaData[]
       ) => {
-        const tokenAAccount = await tryGetTokenAccount(
-          connection,
-          accounts[0].pubkey
-        )
-        const tokenBAccount = await tryGetTokenAccount(
-          connection,
-          accounts[1].pubkey
-        )
+        // Query hooks for token accounts
+        const { data: tokenAAccount } = useQuery(
+          ['tokenAccount', accounts[0].pubkey],
+          () => fetchTokenAccount(connection, accounts[0].pubkey)
+        );
 
-        const tokenAMintInfo = tokenAAccount?.account.mint
-          ? await tryGetMint(connection, tokenAAccount.account.mint)
-          : null
+        const { data: tokenBAccount } = useQuery(
+          ['tokenAccount', accounts[1].pubkey],
+          () => fetchTokenAccount(connection, accounts[1].pubkey)
+        );
 
-        const tokenBMintInfo = tokenBAccount?.account.mint
-          ? await tryGetMint(connection, tokenBAccount.account.mint)
-          : null
+        // Query hooks for mint info
+        const { data: tokenAMintInfo } = useQuery(
+          ['mintInfo', tokenAAccount?.mint],
+          () => fetchMintInfo(connection, tokenAAccount?.mint),
+          { enabled: !!tokenAAccount?.mint }
+        );
 
+        const { data: tokenBMintInfo } = useQuery(
+          ['mintInfo', tokenBAccount?.mint],
+          () => fetchMintInfo(connection, tokenBAccount?.mint),
+          { enabled: !!tokenBAccount?.mint }
+        );
+
+        // Render the UI
         return (
           <div className="space-y-3">
             <div>
@@ -52,8 +78,8 @@ export const METEORA_INSTRUCTIONS = {
                 {tokenAAccount &&
                   tokenAMintInfo &&
                   getMintDecimalAmountFromNatural(
-                    tokenAMintInfo.account,
-                    tokenAAccount.account.amount
+                    tokenAMintInfo,
+                    tokenAAccount.amount
                   ).toFormat()}
               </div>
             </div>
@@ -63,14 +89,14 @@ export const METEORA_INSTRUCTIONS = {
                 {tokenBAccount &&
                   tokenBMintInfo &&
                   getMintDecimalAmountFromNatural(
-                    tokenBMintInfo.account,
-                    tokenBAccount.account.amount
+                    tokenBMintInfo,
+                    tokenBAccount.amount
                   ).toFormat()}
               </div>
             </div>
           </div>
-        )
+        );
       },
     },
   },
-}
+};
