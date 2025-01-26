@@ -615,7 +615,59 @@ export default function useGovernanceAssets() {
       name: 'Payment Stream: Transfer stream',
       packageId: PackageEnum.MeanFinance,
     },
-
+    
+    /*
+      ███    ███ ███████ ████████ ███████  ██████  ██████   █████  
+      ████  ████ ██         ██    ██      ██    ██ ██   ██ ██   ██ 
+      ██ ████ ██ █████      ██    █████   ██    ██ ██████  ███████ 
+      ██  ██  ██ ██         ██    ██      ██    ██ ██   ██ ██   ██ 
+      ██      ██ ███████    ██    ███████  ██████  ██   ██ ██   ██ 
+      */                                                       
+                                                             
+      [Instructions.CreateMeteoraPool]: {
+        name: 'Create Liquidity Pool',
+        packageId: PackageEnum.Meteora,
+      },
+      // [Instructions.MeteoraAddLiquidity]: {
+      //   name: 'Add Liquidity',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraRemoveLiquidity]: {
+      //   name: 'Remove Liquidity',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraSwap]: {
+      //   name: 'Swap',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraCreatePool]: {
+      //   name: 'Create Pool',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraCreatePoolToken]: {
+      //   name: 'Create Pool Token',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraDeposit]: {
+      //   name: 'Deposit',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraWithdraw]: {
+      //   name: 'Withdraw',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraSwapToken]: {
+      //   name: 'Swap Token',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraCreatePoolTokenAccount]: {
+      //   name: 'Create Pool Token Account',
+      //   packageId: PackageEnum.Meteora,
+      // },
+      // [Instructions.MeteoraCreatePoolTokenAccountWithSeed]: {
+      //   name: 'Create Pool Token Account with Seed',
+      //   packageId: PackageEnum.Meteora,
+      // },
     /*
       ██████  ███████ ██    ██  ███████ ██ ███    ██  █████  ███    ██  ██████ ███████
       ██   ██ ██       ██  ██   ██      ██ ████   ██ ██   ██ ████   ██ ██      ██     
