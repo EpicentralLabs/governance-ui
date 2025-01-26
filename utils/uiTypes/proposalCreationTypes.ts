@@ -615,5 +615,10 @@ export interface SymmetryWithdrawForm {
 
 export interface CreateMeteoraPoolForm {
   governedAccount?: AssetAccount
-  // Add other required fields for Meteora pool creation
+  tokenAMint: string
+  tokenBMint: string
+  authority: string
+  fee: number
+  
+
 }
